@@ -1,0 +1,128 @@
+﻿#include <iostream>
+#include <string>
+
+using namespace std;
+
+
+
+struct Player {
+    string name;
+    string symbol;
+    int nWin;
+};
+
+
+class PlayingField {
+private:
+    Player player1;
+    Player player2;
+    Player& playerMove;
+    string pf[3][3] = {
+        {"","",""},
+        {"","",""},
+        {"","",""},
+    };
+
+public:
+
+    PlayingField() : playerMove(player1) {
+        player1.name = "player1";
+        player1.symbol = "x";
+        player1.nWin = 0;
+
+        player2.name = "player2";
+        player2.symbol = "0";
+        player2.nWin = 0;
+    }
+
+    void printPlaingField() {
+        for (int i = 0; i < 3; i++)
+        {
+            string tempLine = " ";
+            for (int j = 0; j < 3; j++)
+            {
+                tempLine.append(pf[i][j]);
+                if (j < 2) {
+                    tempLine.append(" | ");
+                };
+            };
+            cout << tempLine << endl;
+        };
+    }
+  
+    bool cheakPlayingField() {
+        // horizontal and vertical
+
+        for (int i = 0; i < 3; i++)
+        {
+            int nHorizontal = 0;
+            int nVertical = 0;
+            for (int j = 0; j < 3; j++)
+            {
+                if (pf[i][j] == playerMove.symbol) {
+                    nHorizontal++;
+                }
+                if (pf[j][i] == playerMove.symbol) {
+                    nVertical++;
+                }
+            }
+            if (nHorizontal == 3) {
+                return true;
+            }
+            if (nVertical == 3) {
+                return true;
+            }
+        }
+       
+        // diagonal
+        int nDiagonal1 = 0;
+        int nDiagonal2 = 0;
+
+        for (int i = 0; i < 3; i++)
+        {
+            if (pf[i][i] == playerMove.symbol)
+            {
+                nDiagonal1++;
+            }
+            if (pf[i][2 - i] == playerMove.symbol) {
+                nDiagonal2++;
+            }
+            if (nDiagonal1 == 3) {
+                return true;
+            }
+            if (nDiagonal2 == 3) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void swapPlayerMove() {
+        if (playerMove.name == player1.name) {
+            playerMove = player2;
+        }
+        else {
+            playerMove = player1;
+        }
+
+    }
+
+    void setPositionOnPlayingField(int x, int y) {
+        if (pf[x][y] == "") {
+            pf[x][y] = playerMove.symbol;
+        }
+        else {
+            cout << "Данное поле занято" << endl;
+
+        }
+    }
+};
+
+int main()
+{
+    setlocale(LC_ALL, "RU");
+    
+    PlayingField pf;
+
+    return 0;
+}
