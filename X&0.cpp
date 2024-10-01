@@ -18,9 +18,9 @@ private:
     Player player2;
     Player& playerMove;
     string pf[3][3] = {
-        {"","",""},
-        {"","",""},
-        {"","",""},
+        {" "," "," "},
+        {" "," "," "},
+        {" "," "," "},
     };
 
 public:
@@ -33,6 +33,59 @@ public:
         player2.name = "player2";
         player2.symbol = "0";
         player2.nWin = 0;
+        startGame();
+    }
+
+
+
+    void startGame() {
+        setStartingSetting();
+        while (true)
+        {
+            try {
+                int x = 0, y = 0;
+                cout << "Позиция x: ";
+                cin >> x;
+                cout << "Позиция y: ";
+                cin >> y;
+
+                bool isPositionX = x >= 0 && x <= 3;
+                bool isPositionY = y >= 0 && y <= 3;
+
+
+                if (isPositionX && isPositionY)
+                {
+                    cout << "Все ок!";
+                }
+                else if (x == -1 || y == -1)
+                {
+                    break;
+                }
+                else {
+                    cout << "Значения вне допустимого диапозона!\n\n";
+                    continue;
+                }
+            }
+            catch (exception e) {
+                cout << e.what();
+                break;
+            }
+        }
+    }
+
+    void setStartingSetting() {
+        string namePlayer1, namePlayer2;
+        cout << "Игра X&0\n\n";
+        cout << "Сделал: Ландарев Иван\nГруппа: 4104\n";
+        cout << "Чтобы прекратить игру, в поля позиции введити '-1'\n\n";
+        cout << "Начинает игрок 1\n";
+        cout << "Введите имя 1 игрока: ";
+        cin >> namePlayer1;
+        player1.name = namePlayer1;
+        cout << "Введите имя 2 игрока: ";
+        cin >> namePlayer2;
+        player2.name = namePlayer2;
+        cout << "Игра начинается. Удачи\n\n";
     }
 
     void printPlaingField() {
@@ -108,14 +161,14 @@ public:
     }
 
     void setPositionOnPlayingField(int x, int y) {
-        if (pf[x][y] == "") {
+        if (pf[x][y] == " ") {
             pf[x][y] = playerMove.symbol;
         }
         else {
             cout << "Данное поле занято" << endl;
-
         }
     }
+
 };
 
 int main()
@@ -123,6 +176,5 @@ int main()
     setlocale(LC_ALL, "RU");
     
     PlayingField pf;
-
     return 0;
 }
