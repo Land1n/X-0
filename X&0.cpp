@@ -1,5 +1,6 @@
 ﻿#include <iostream>
 #include <string>
+#include <array>
 
 using namespace std;
 
@@ -8,7 +9,7 @@ using namespace std;
 struct Player {
     string name;
     string symbol;
-    int nWin;
+    int nWin = 0;
 };
 
 
@@ -16,7 +17,8 @@ class PlayingField {
 private:
     Player player1;
     Player player2;
-    Player& playerMove;
+    Player playerMove;
+    bool isGame = false;
     string pf[3][3] = {
         {" "," "," "},
         {" "," "," "},
@@ -25,7 +27,7 @@ private:
 
 public:
 
-    PlayingField() : playerMove(player1) {
+    PlayingField() {
         player1.name = "player1";
         player1.symbol = "x";
         player1.nWin = 0;
@@ -33,52 +35,66 @@ public:
         player2.name = "player2";
         player2.symbol = "0";
         player2.nWin = 0;
-        startGame();
     }
 
 
 
     void startGame() {
         setStartingSetting();
-        while (true)
+        isGame = true;
+        while (isGame)
         {
-            try {
-                int x = 0, y = 0;
-                cout << "Позиция x: ";
-                cin >> x;
-                cout << "Позиция y: ";
-                cin >> y;
-
-                bool isPositionX = x >= 0 && x <= 3;
-                bool isPositionY = y >= 0 && y <= 3;
-
-
-                if (isPositionX && isPositionY)
-                {
-                    cout << "Все ок!";
-                }
-                else if (x == -1 || y == -1)
-                {
-                    break;
-                }
-                else {
-                    cout << "Значения вне допустимого диапозона!\n\n";
-                    continue;
-                }
+            printPlaingField();
+            int* arrayPosition = &getPosition()[0];
+            int& x = *arrayPosition;
+            int& y = *(arrayPosition + 1);
+            if (!setPosition(x, y)) {
+                continue;
             }
-            catch (exception e) {
-                cout << e.what();
-                break;
+            if (cheakPlayingField()) {
+                printWin();
+            }
+            else {
+                swapPlayerMove();
             }
         }
     }
 
+    void printWin() {
+        cout << "Выйграл: " << playerMove.name << endl;
+        playerMove.nWin++;
+        string isСontinuesGame;
+        cout << "Продолжаем игру? (Y/N): ";
+        cin >> isСontinuesGame;
+        cout << "\n";
+        if (isСontinuesGame == "Y" || isСontinuesGame == "y") {
+            cout << "Продолжаем\n\n";
+            setDefaultPlayingField();
+            swapPlayerMove();
+        }
+        else if (isСontinuesGame == "N" || isСontinuesGame == "n") {
+            isGame = false;
+        }
+        else {
+            cout << "Недопустимое значение" << "\n\n";
+            printWin();
+        }
+    }
+
+    void setDefaultPlayingField() {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++)
+            {
+                pf[i][j] = " ";
+            }
+        }
+    }
+   
     void setStartingSetting() {
         string namePlayer1, namePlayer2;
         cout << "Игра X&0\n\n";
         cout << "Сделал: Ландарев Иван\nГруппа: 4104\n";
         cout << "Чтобы прекратить игру, в поля позиции введити '-1'\n\n";
-        cout << "Начинает игрок 1\n";
         cout << "Введите имя 1 игрока: ";
         cin >> namePlayer1;
         player1.name = namePlayer1;
@@ -86,6 +102,9 @@ public:
         cin >> namePlayer2;
         player2.name = namePlayer2;
         cout << "Игра начинается. Удачи\n\n";
+        playerMove = player1;
+        cout << "Игру начинает: " << playerMove.name << " \n\n";
+
     }
 
     void printPlaingField() {
@@ -157,15 +176,48 @@ public:
         else {
             playerMove = player1;
         }
-
+        cout << "Теперь ходит игрок " << playerMove.name << "\n\n";
     }
 
-    void setPositionOnPlayingField(int x, int y) {
-        if (pf[x][y] == " ") {
-            pf[x][y] = playerMove.symbol;
+    array<int, 2> getPosition() {
+        int x = 0, y = 0;
+        cout << "Позиция x: ";
+        cin >> x;
+        cout << endl;
+        cout << "Позиция y: ";
+        cin >> y;
+        cout << endl;
+
+        bool isPositionX = (x >= 0 && x <= 3);
+        bool isPositionY = (y >= 0 && y <= 3);
+
+        if (isPositionX && isPositionY)
+        {
+            array<int,2> arrayPosition {x, y};
+            return arrayPosition;
+        }
+        else if (x == -1 || y == -1)
+        {
+            cout << "Игра закончена!\n\n";
+            array<int, 2> arrayPosition{ -1, -1 };
+            return arrayPosition;
         }
         else {
-            cout << "Данное поле занято" << endl;
+            cout << "Значения вне допустимого диапозона!\n\n";
+            getPosition();
+        }
+    }
+
+    bool setPosition(int& x, int& y) {
+        if (pf[3 - (--y)][--x] == " ")
+        {
+            pf[3 - (--y)][--x] = playerMove.symbol;
+            cout << "Значение установленно" << endl;
+            return true;
+        }
+        else {
+            cout << "Поле занято" << endl;
+            return false;
         }
     }
 
@@ -174,7 +226,7 @@ public:
 int main()
 {
     setlocale(LC_ALL, "RU");
-    
     PlayingField pf;
+    pf.startGame();
     return 0;
 }
